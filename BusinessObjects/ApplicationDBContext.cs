@@ -8,13 +8,14 @@ namespace BusinessObjects
         public MyDbContext() { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        => optionsBuilder.UseSqlServer(GetConnectionString());
 
-            IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("MyStoreDB"));
+        private string? GetConnectionString()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", true, true).Build();
+            return configuration["ConnectionStrings:DB"];
         }
 
         public virtual DbSet<Category> Categories { get; set; }
